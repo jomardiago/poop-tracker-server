@@ -3,10 +3,14 @@ import { hash } from "bcrypt";
 
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
+import { AuthService } from "src/auth/auth.service";
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly authService: AuthService
+  ) {}
 
   async create(data: CreateUserDto) {
     try {
@@ -19,15 +23,21 @@ export class UsersService {
 
       if (user) throw new ConflictException("User already exists.");
 
-      await this.prisma.user.create({
+      const createdUser = await this.prisma.user.create({
         data: {
           ...data,
           password: hashedPassword,
         },
       });
 
+      delete createdUser.password;
+      const accessToken = await this.authService.generateAccessToken(
+        createdUser
+      );
+
       return {
-        message: "User created.",
+        ...createdUser,
+        accessToken,
       };
     } catch (error) {
       console.log("UsersService create:", error);
@@ -50,6 +60,7 @@ export class UsersService {
         },
       });
     } catch (error) {
+      console.log("UsersService findUserByUsernameOrEmail:", error);
       throw error;
     }
   }
