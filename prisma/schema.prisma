@@ -11,10 +11,20 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  username String @unique
-  email    String @unique
-  password String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  poops     Poop[]
+}
+
+model Poop {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryDate String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?  @db.ObjectId
 }
