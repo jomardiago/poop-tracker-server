@@ -9,6 +9,14 @@ export class PoopsService {
 
   async create(data: CreatePoopDto, userId: string) {
     try {
+      const poop = await this.findPoopByCurrentDate(data.entryDate);
+
+      if (poop) {
+        return {
+          message: "You already pooped for today.",
+        };
+      }
+
       await this.prisma.poop.create({
         data: {
           entryDate: new Date(data.entryDate),
@@ -21,6 +29,40 @@ export class PoopsService {
       };
     } catch (error) {
       console.log("PoopsService create:", error);
+      throw error;
+    }
+  }
+
+  async findPoopByCurrentDate(entryDate: string) {
+    const currentDate = new Date(entryDate);
+
+    try {
+      const poop = await this.prisma.poop.findFirst({
+        where: {
+          entryDate: {
+            gte: new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth(),
+              currentDate.getDate(),
+              0,
+              0,
+              0
+            ),
+            lt: new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth(),
+              currentDate.getDate() + 1,
+              0,
+              0,
+              0
+            ),
+          },
+        },
+      });
+
+      return poop;
+    } catch (error) {
+      console.log("PoopsService findPoopByCurrentDate:", error);
       throw error;
     }
   }
