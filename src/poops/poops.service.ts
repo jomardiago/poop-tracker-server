@@ -11,7 +11,7 @@ export class PoopsService {
     try {
       await this.prisma.poop.create({
         data: {
-          ...data,
+          entryDate: new Date(data.entryDate),
           userId,
         },
       });

@@ -1,6 +1,6 @@
-import { IsDate } from "class-validator";
+import { IsString } from "class-validator";
 
 export class CreatePoopDto {
-  @IsDate()
+  @IsString()
   entryDate: string;
 }
