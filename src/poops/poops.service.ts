@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { isToday } from "date-fns";
 
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePoopDto } from "./dtos/create-poop.dto";
@@ -9,7 +10,7 @@ export class PoopsService {
 
   async create(data: CreatePoopDto, userId: string) {
     try {
-      const poop = await this.findPoopByCurrentDate(data.entryDate);
+      const poop = await this.findPoopByCurrentDate();
 
       if (poop) {
         return {
@@ -33,34 +34,19 @@ export class PoopsService {
     }
   }
 
-  async findPoopByCurrentDate(entryDate: string) {
-    const currentDate = new Date(entryDate);
-
+  async findPoopByCurrentDate() {
     try {
       const poop = await this.prisma.poop.findFirst({
-        where: {
-          entryDate: {
-            gte: new Date(
-              currentDate.getFullYear(),
-              currentDate.getMonth(),
-              currentDate.getDate(),
-              0,
-              0,
-              0
-            ),
-            lt: new Date(
-              currentDate.getFullYear(),
-              currentDate.getMonth(),
-              currentDate.getDate() + 1,
-              0,
-              0,
-              0
-            ),
-          },
+        orderBy: {
+          entryDate: "desc",
         },
       });
 
-      return poop;
+      if (isToday(poop.entryDate)) {
+        return poop;
+      } else {
+        return null;
+      }
     } catch (error) {
       console.log("PoopsService findPoopByCurrentDate:", error);
       throw error;
@@ -73,6 +59,10 @@ export class PoopsService {
         where: {
           userId,
         },
+        orderBy: {
+          entryDate: "desc",
+        },
+        take: 7,
       });
 
       return poops;
