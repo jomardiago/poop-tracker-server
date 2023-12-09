@@ -22,7 +22,7 @@ model User {
 
 model Poop {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  entryDate String
+  entryDate DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
