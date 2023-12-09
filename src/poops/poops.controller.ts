@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
 
 import { PoopsService } from "./poops.service";
 import { AuthGuard } from "src/auth/guards/auth.guard";
@@ -15,5 +22,10 @@ export class PoopsController {
     @Request() req: { user: { id: string } }
   ) {
     return this.poopsService.create(data, req.user.id);
+  }
+
+  @Get()
+  findAll(@Request() req: { user: { id: string } }) {
+    return this.poopsService.findAll(req.user.id);
   }
 }

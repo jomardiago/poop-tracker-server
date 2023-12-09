@@ -66,4 +66,19 @@ export class PoopsService {
       throw error;
     }
   }
+
+  async findAll(userId: string) {
+    try {
+      const poops = await this.prisma.poop.findMany({
+        where: {
+          userId,
+        },
+      });
+
+      return poops;
+    } catch (error) {
+      console.log("PoopsService findAll:", error);
+      throw error;
+    }
+  }
 }
