@@ -81,4 +81,22 @@ export class PoopsService {
       throw error;
     }
   }
+
+  async remove(id: string, userId: string) {
+    try {
+      await this.prisma.poop.delete({
+        where: {
+          id,
+          userId,
+        },
+      });
+
+      return {
+        message: "Poop entry deleted.",
+      };
+    } catch (error) {
+      console.log("PoopsService remove:", error);
+      throw error;
+    }
+  }
 }

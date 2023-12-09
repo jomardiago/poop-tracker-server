@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -27,5 +29,10 @@ export class PoopsController {
   @Get()
   findAll(@Request() req: { user: { id: string } }) {
     return this.poopsService.findAll(req.user.id);
+  }
+
+  @Delete(":id")
+  remove(@Param("id") id: string, @Request() req: { user: { id: string } }) {
+    return this.poopsService.remove(id, req.user.id);
   }
 }
