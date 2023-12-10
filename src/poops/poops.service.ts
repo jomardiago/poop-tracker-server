@@ -10,7 +10,7 @@ export class PoopsService {
 
   async create(data: CreatePoopDto, userId: string) {
     try {
-      const poop = await this.findPoopByCurrentDate();
+      const poop = await this.findPoopByCurrentDate(data.entryDate);
 
       if (poop) {
         return {
@@ -34,7 +34,9 @@ export class PoopsService {
     }
   }
 
-  async findPoopByCurrentDate() {
+  async findPoopByCurrentDate(entry_date: string) {
+    const entryDate = new Date(entry_date);
+
     try {
       const poop = await this.prisma.poop.findFirst({
         orderBy: {
@@ -42,7 +44,7 @@ export class PoopsService {
         },
       });
 
-      if (poop && isSameDay(poop.entryDate, new Date())) {
+      if (poop && isSameDay(poop.entryDate, entryDate)) {
         return poop;
       } else {
         return null;
