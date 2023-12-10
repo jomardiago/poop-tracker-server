@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isToday } from "date-fns";
+import { isSameDay } from "date-fns";
 
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePoopDto } from "./dtos/create-poop.dto";
@@ -42,7 +42,7 @@ export class PoopsService {
         },
       });
 
-      if (isToday(poop.entryDate)) {
+      if (poop && isSameDay(poop.entryDate, new Date())) {
         return poop;
       } else {
         return null;
